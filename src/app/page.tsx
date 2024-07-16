@@ -68,7 +68,7 @@ export default function Home() {
             <article className="flex-[1] flex flex-col gap-4 w-full">
               <h2 className="text-4xl font-semibold"><span className="text-lime-600">aboutMe</span>( )</h2>
               <p className="lg:max-w-[28rem]">
-              Graduated as an Analyst and Developer of Systems, I have worked in the development area since I graduated, in 2019. I really love programming and I'm constantly searching for new challenges and troubles to solve. Currently, I am working for a financial cooperative system, developing new ways for them to do their work better.
+              Graduated as an Analyst and Developer of Systems, I have worked in the development area since I graduated, in 2019. I really love programming and I&apos;m constantly searching for new challenges and troubles to solve. Currently, I am working for a financial cooperative system, developing new ways for them to do their work better.
               </p>
             </article>
             <aside className="flex-[1] flex flex-col gap-2 items-center pt-5">
@@ -152,9 +152,9 @@ export default function Home() {
                   <i className="absolute w-6 h-6 rounded-full border-lime-500 bg-zinc-950 border-2 -translate-x-[40%] top-6"></i>
                 </span>
                 <article className="flex-1 flex flex-col justify-center items-center gap-3 py-8">
-                  <h3 className="text-2xl font-semibold text-lime-600">2019 - Veloso's enterprise</h3>
+                  <h3 className="text-2xl font-semibold text-lime-600">2019 - Veloso&apos;s enterprise</h3>
                   <p className="max-w-[500px]">
-                  As soon as I graduated, I started working in the IT area, for Veloso's enterprise. There I worked on developing and implementing up a system that helps the enterprise director. It generates some reports for important decisions and strategies to take.
+                  As soon as I graduated, I started working in the IT area, for Veloso&apos;s enterprise. There I worked on developing and implementing up a system that helps the enterprise director. It generates some reports for important decisions and strategies to take.
                   </p>
                   <a href="https://velosoeletromoveis.com.br/" className="px-8 py-2 border-2 rounded-lg">Go to website</a>
                 </article>
@@ -180,7 +180,7 @@ export default function Home() {
                 <article className="flex-1 flex flex-col justify-center items-center gap-3 py-8">
                   <h3 className="text-2xl font-semibold text-lime-600">2022 - ACT (working for Sicoob)</h3>
                   <p className="max-w-[500px]">
-                  After finishing Sodexo's project, I was relocated to work for Sicoob, where I am currently working. Here I can develop some new ways for the cooperatives to work, so they can securely make financial transactions.
+                  After finishing Sodexo&apos;s project, I was relocated to work for Sicoob, where I am currently working. Here I can develop some new ways for the cooperatives to work, so they can securely make financial transactions.
                   </p>
                   <a href="https://actdigital.com/" className="px-8 py-2 border-2 rounded-lg">Go to website</a>
                 </article>
