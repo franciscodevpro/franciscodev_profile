@@ -1,4 +1,8 @@
 'use client'
+import { Inter } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 import Image from "next/image";
 import { AiFillLinkedin, AiFillGithub, AiOutlineGithub } from "react-icons/ai";
@@ -7,15 +11,33 @@ import { PiBracketsCurlyBold } from "react-icons/pi";
 import ProfileImage from "../../public/profile.png"
 import { AmazonwebservicesOriginalWordmark, BitbucketOriginal, Css3Original, GitOriginal, GitlabOriginal, Html5Original, JavascriptOriginal, JenkinsOriginal, JestPlain, NodejsOriginal, ReactOriginal, TailwindcssOriginal, TypescriptOriginal } from "devicons-react";
 import React, { useState } from "react"
+import { GetStaticProps, InferGetStaticPropsType } from "next";
+import Link from "next/link";
 
-export default function Home() {
+type Repo = {
+  name: string
+  html_url: string
+}
+ 
+export const getStaticProps = (async (context) => {
+  const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
+  const repo = await res.json()
+  return { props: { repo } }
+}) satisfies GetStaticProps<{
+  repo: Repo[]
+}>
+
+export default function Page({
+  repo,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const projects = [
+  const projects: {img: any, title: string, link: string}[] = repo.map((element: Repo) => (
     {
-      img: <Image src="" alt="No projects currently" height={150} width={64}/>,
-      title: ""
+      img: <img src={element.html_url + "/blob/master/image.png?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
+      title: element.name,
+      link: element.html_url
     }
-  ];
+  ));
   
   const showNextSlide = () => {
     const currSlide = (currentSlide < projects.length - 1)? currentSlide+1 : 0;
@@ -28,9 +50,9 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center min-h-screen bg-gradient-to-br from-zinc-950 from-30% to-zinc-700 text-zinc-100">
+    <main className={inter.className + " flex flex-col items-center min-h-screen bg-gradient-to-br from-zinc-950 from-30% to-zinc-700 text-zinc-100"}>
       <header className="w-[100%] box-border flex flex-col gap-8 lg:gap-0 lg:flex-row justify-between items-center py-6 px-12">
-        <a href="/"><strong className="text-3xl font-bold">FRANCISCO<span className="opacity-40">DEV</span></strong></a>
+        <Link href="/"><strong className="text-3xl font-bold">FRANCISCO<span className="opacity-40">DEV</span></strong></Link>
         <nav className="flex gap-10 font-semibold">
             <a href="#about">About</a>
             <a href="#skills">Skills</a>
@@ -109,18 +131,20 @@ export default function Home() {
         </section>
         <section id="projects" className="flex-1 flex w-[100%] flex-col items-center gap-10 lg:mb-32 p-10">
             <h2 className="text-4xl font-semibold max-w-[1524px] w-[100%] "><span className="text-lime-600">projects</span>( )</h2>
-            <aside className="overflow-hidden w-[100%] h-80 relative">
+            <aside className="overflow-hidden w-[100%] h-80 relative max-w-[1524px]">
               <ul className={"flex gap-7 overflow-visible absolute min-w-[100%] h-auto py-4 text-nowrap transition-all duration-[1s]"} style={{ transform: `translateX(-${Math.floor((currentSlide/projects.length) * 100)}%)` }}>
                 {(
                   projects.map((elm, key) => (
-                    <li key={key} className={"box-border w-64 h-auto rounded-md overflow-hidden block relative border-2 hover:border-lime-600 hover:px-1 hover:cursor-pointer transition-all "}>
-                      <aside>{elm.img}</aside>
-                      <article className="-translate-y-10 p-2 bg-zinc-700/40 absolute w-[100%]">{elm.title}</article>
-                    </li>
+                    <Link key={key} href={elm.link}>
+                        <li className={"box-border w-64 h-auto rounded-md overflow-hidden block relative border-2 hover:border-lime-600 hover:px-1 hover:cursor-pointer transition-all "}>
+                            <aside>{elm.img}</aside>
+                            <article className="-translate-y-10 p-2 bg-zinc-700/40 absolute w-[100%]">{elm.title}</article>
+                        </li>
+                    </Link>
                   ))
                 )}
               </ul>
-              <div className="absolute bottom-0 flex justify-center w-screen gap-8">
+              <div className="absolute bottom-0 flex justify-center items-center w-full gap-8">
                 <button type="button" className="p-2 rounded-full bg-zinc-700/50 hover:bg-zinc-700" onClick={showPreviousSlide}>
                   <BsChevronLeft />
                 </button>
