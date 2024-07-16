@@ -1,5 +1,7 @@
+<section>
 <img src="image.png" alt="Web screen of page" height="200" />
 <img src="image-1.png"  alt="Web mobile screen version" height="200" />
+</section>
 <br/>
 <br/>
 
