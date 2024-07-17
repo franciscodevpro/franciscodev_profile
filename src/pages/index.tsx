@@ -73,7 +73,7 @@ export default function Page({
             <div className="text-zinc-500 flex flex-col lg:flex-row gap-10">
               <p className="flex gap-2">
                 <strong className="text-5xl">5</strong>
-                <span className="text-lg leading-5 translate-y-1 uppercase">Years of <br />experience</span>
+                <span className="text-lg leading-5 translate-y-1 uppercase">Years Of <br />experience</span>
               </p>
               <p className="flex gap-2">
                 <strong className="text-5xl">3</strong>
