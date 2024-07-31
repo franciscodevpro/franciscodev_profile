@@ -10,7 +10,7 @@ import { BsChevronLeft, BsChevronRight, BsCodeSlash } from "react-icons/bs";
 import { PiBracketsCurlyBold } from "react-icons/pi";
 import ProfileImage from "../../public/profile.png";
 import { AmazonwebservicesOriginalWordmark, BitbucketOriginal, Css3Original, GitOriginal, GitlabOriginal, Html5Original, JavascriptOriginal, JenkinsOriginal, JestPlain, NodejsOriginal, ReactOriginal, TailwindcssOriginal, TypescriptOriginal } from "devicons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Repo = {
@@ -37,7 +37,7 @@ export default function Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [projects, setProjects] = useState<{img: any, title: string, link: string}[]>(mapReposToProjects([]));
 
-  getMyPublicRepos(repos => setProjects(mapReposToProjects(repos)));
+  useEffect(() => {getMyPublicRepos(repos => setProjects(mapReposToProjects(repos)))}, []);
   
   const showNextSlide = () => {
     const currSlide = (currentSlide < projects.length - 1)? currentSlide+1 : 0;
