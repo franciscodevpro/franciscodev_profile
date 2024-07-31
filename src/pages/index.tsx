@@ -8,36 +8,36 @@ import Image from "next/image";
 import { AiFillLinkedin, AiFillGithub, AiOutlineGithub } from "react-icons/ai";
 import { BsChevronLeft, BsChevronRight, BsCodeSlash } from "react-icons/bs";
 import { PiBracketsCurlyBold } from "react-icons/pi";
-import ProfileImage from "../../public/profile.png"
+import ProfileImage from "../../public/profile.png";
 import { AmazonwebservicesOriginalWordmark, BitbucketOriginal, Css3Original, GitOriginal, GitlabOriginal, Html5Original, JavascriptOriginal, JenkinsOriginal, JestPlain, NodejsOriginal, ReactOriginal, TailwindcssOriginal, TypescriptOriginal } from "devicons-react";
-import React, { useState } from "react"
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { useState } from "react";
 import Link from "next/link";
 
 type Repo = {
   name: string
   html_url: string
 }
- 
-export const getStaticProps = (async (context) => {
-  const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
-  const repo = await res.json()
-  return { props: { repo } }
-}) satisfies GetStaticProps<{
-  repo: Repo[]
-}>
 
-export default function Page({
-  repo,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const projects: {img: any, title: string, link: string}[] = repo.map((element: Repo) => (
+export default function Page() {
+  const getMyPublicRepos = async (cbk: (repos: Repo[]) => void): Promise<Repo[]> => {
+    const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
+    const repo = await res.json()
+    cbk(repo)
+    return repo;
+  }
+
+  const mapReposToProjects = (repo: Repo[]): {img: any, title: string, link: string}[] => repo.map((element: Repo) => (
     {
       img: <img src={element.html_url + "/blob/master/image.png?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
       title: element.name,
       link: element.html_url
     }
   ));
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [projects, setProjects] = useState<{img: any, title: string, link: string}[]>(mapReposToProjects([]));
+
+  getMyPublicRepos(repos => setProjects(mapReposToProjects(repos)));
   
   const showNextSlide = () => {
     const currSlide = (currentSlide < projects.length - 1)? currentSlide+1 : 0;
