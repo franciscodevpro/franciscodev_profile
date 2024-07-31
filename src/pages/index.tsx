@@ -4,7 +4,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-import Image from "next/image";
+import ReactImage from "next/image";
 import { AiFillLinkedin, AiFillGithub, AiOutlineGithub } from "react-icons/ai";
 import { BsChevronLeft, BsChevronRight, BsCodeSlash } from "react-icons/bs";
 import { PiBracketsCurlyBold } from "react-icons/pi";
@@ -19,16 +19,29 @@ type Repo = {
 }
 
 export default function Page() {
+
+  const checkImage = (path: string): Promise<{path: string, status: 'ok'| 'error', ok: boolean}> => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({path, status: 'ok', ok: true});
+    img.onerror = () => resolve({path, status: 'error', ok: false});
+    img.src = path;
+  });
+
+
   const getMyPublicRepos = async (cbk: (repos: Repo[]) => void): Promise<Repo[]> => {
     const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
-    const repo = await res.json()
-    cbk(repo)
-    return repo;
+    const repo: Repo[] = await res.json()
+    const promises = repo.map(async (elm): Promise<Repo | null> => {
+      if((await checkImage(elm.html_url + "/blob/main/image.png?raw=true")).ok) return elm; return null;
+    });
+    const result = (await Promise.all(promises)).filter(elm => elm != null) as Repo[];
+    cbk(result)
+    return result;
   }
 
   const mapReposToProjects = (repo: Repo[]): {img: any, title: string, link: string}[] => repo.map((element: Repo) => (
     {
-      img: <img src={element.html_url + "/blob/master/image.png?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
+      img: <img src={element.html_url + "/blob/main/image.png?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
       title: element.name,
       link: element.html_url
     }
@@ -82,7 +95,7 @@ export default function Page() {
             </div>
           </article>
           <aside className="flex-1 flex justify-center">
-            <Image src={ProfileImage} alt="Image of dev profile" className="max-h-96 max-w-96" />
+            <ReactImage src={ProfileImage} alt="Image of dev profile" className="max-h-96 max-w-96" />
           </aside>
         </section>
 
