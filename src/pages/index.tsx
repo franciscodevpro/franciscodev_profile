@@ -15,16 +15,23 @@ import { TfiEmail } from "react-icons/tfi";
 
 type Repo = {
   name: string
-  html_url: string
+  html_url: string,
+  config: ProjectConfig | null
+}
+
+type ProjectConfig = {
+  title: string,
+  description: string,
+  images: string[],
+  app_url: string
 }
 
 export default function Page() {
 
-  const checkImage = (path: string): Promise<{path: string, status: 'ok'| 'error', ok: boolean}> => new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => resolve({path, status: 'ok', ok: true});
-    img.onerror = () => resolve({path, status: 'error', ok: false});
-    img.src = path;
+  const checkConfig = (path: string): Promise<ProjectConfig | null> => new Promise(resolve => {
+    fetch(path.replace("github.com", "raw.githubusercontent.com") + "/main/.portfolio/config.json").then(result => {
+        result.json().then(jsonConfig => resolve(jsonConfig)).catch(_ => resolve(null));
+    }).catch(_ => resolve(null))
   });
 
 
@@ -32,7 +39,8 @@ export default function Page() {
     const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
     const repo: Repo[] = await res.json()
     const promises = repo.map(async (elm): Promise<Repo | null> => {
-      if((await checkImage(elm.html_url + "/blob/main/image.png?raw=true")).ok) return elm; return null;
+      const config = await checkConfig(elm.html_url);
+      if(!!config) return {...elm, config}; return null;
     });
     const result = (await Promise.all(promises)).filter(elm => elm != null) as Repo[];
     cbk(result)
@@ -41,9 +49,9 @@ export default function Page() {
 
   const mapReposToProjects = (repo: Repo[]): {img: any, title: string, link: string}[] => repo.map((element: Repo) => (
     {
-      img: <img src={element.html_url + "/blob/main/image.png?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
-      title: element.name,
-      link: element.html_url
+      img: <img src={element.html_url + "/blob/main/.portfolio/" + (element.config?.images?.[0] || "image.png") + "?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
+      title: element.config?.title || element.name,
+      link: element.config?.app_url || element.html_url
     }
   ));
 
@@ -70,7 +78,7 @@ export default function Page() {
   }
 
   return (
-    <main className={inter.className + " flex flex-col items-center min-h-screen bg-gradient-to-br from-zinc-950 from-30% to-zinc-700 text-zinc-100"}>
+    <main className={inter.className + " flex flex-col items-center min-h-screen bg-gradient-to-br from-zinc-950 from-30% to-zinc-700 text-zinc-100 scroll-smooth"}>
       <header className="w-[100%] box-border flex flex-col gap-8 lg:gap-0 lg:flex-row justify-between items-center py-6 px-12">
         <Link href="/"><strong className="text-3xl font-bold">FRANCISCO<span className="opacity-40">DEV</span></strong></Link>
         <nav className="flex gap-10 font-semibold">
