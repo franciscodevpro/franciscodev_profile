@@ -7,11 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 import ReactImage from "next/image";
 import { AiFillLinkedin, AiFillGithub, AiOutlineGithub } from "react-icons/ai";
 import { BsChevronLeft, BsChevronRight, BsCodeSlash } from "react-icons/bs";
-import { PiBracketsCurlyBold } from "react-icons/pi";
 import ProfileImage from "../../public/profile.png";
 import { AmazonwebservicesOriginalWordmark, BitbucketOriginal, Css3Original, GitOriginal, GitlabOriginal, Html5Original, JavascriptOriginal, JenkinsOriginal, JestPlain, NodejsOriginal, ReactOriginal, TailwindcssOriginal, TypescriptOriginal } from "devicons-react";
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { TfiEmail } from "react-icons/tfi";
 
 type Repo = {
   name: string
@@ -49,6 +49,7 @@ export default function Page() {
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [projects, setProjects] = useState<{img: any, title: string, link: string}[]>(mapReposToProjects([]));
+  const [isInClipboard, setIsInClipboard] = useState(false);
 
   useEffect(() => {getMyPublicRepos(repos => setProjects(mapReposToProjects(repos)))}, []);
   
@@ -60,6 +61,12 @@ export default function Page() {
   const showPreviousSlide = () => {
     const currSlide = currentSlide > 0? currentSlide-1 : projects.length -1;
     setCurrentSlide(currSlide)
+  }
+
+  const copyEmail = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    navigator.clipboard.writeText("contato@franciscodev.pro");
+    setIsInClipboard(true);
+    setTimeout(() => setIsInClipboard(false), 2000);
   }
 
   return (
@@ -110,16 +117,21 @@ export default function Page() {
               <div className="flex w-96 bg-zinc-700 rounded-sm py-5 px-6 justify-between items-center shadow-md shadow-zinc-900">
                 <p className="flex flex-col gap-3">
                   <strong className="font-semibold text-xl">Fullstack Developer</strong>
-                  <a href="#" className="text-lime-600 underline">Projects</a>
+                  <a href="#projects" className="text-lime-600 underline">Projects</a>
                 </p>
                 <BsCodeSlash size={32} className="text-lime-600" />
               </div>
               <div className="flex w-96 bg-zinc-700 rounded-sm py-5 px-6 justify-between items-center shadow-md shadow-zinc-900">
                 <p className="flex flex-col gap-3">
-                  <strong className="font-semibold text-xl">Backend Developer</strong>
-                  <a href="#" className="text-lime-600 underline">Rest APIs</a>
+                  <strong className="font-semibold text-xl">Email contact</strong>
+                  {
+                    (isInClipboard?
+                    <div onClick={(evt) => copyEmail(evt as any)} className="text-sky-600 text-left">Email copied</div>:
+                    <button onClick={(evt) => copyEmail(evt as any)} className="text-lime-600 underline text-left">Copy email</button>
+                    )
+                  }
                 </p>
-                <PiBracketsCurlyBold size={32} className="text-lime-600" />
+                <TfiEmail size={32} className="text-lime-600"/>
               </div>
             </aside>
         </section>
