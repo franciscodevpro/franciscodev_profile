@@ -16,7 +16,7 @@ import { TfiEmail } from "react-icons/tfi";
 type Repo = {
   name: string
   html_url: string,
-  config: ProjectConfig | null
+  config: ProjectConfig | null,
 }
 
 type ProjectConfig = {
@@ -24,6 +24,14 @@ type ProjectConfig = {
   description: string,
   images: string[],
   app_url: string
+}
+
+type ProjectElement = {
+  img: any,
+  title: string,
+  github_link: string,
+  link: string | undefined,
+  description: string
 }
 
 export default function Page() {
@@ -47,29 +55,20 @@ export default function Page() {
     return result;
   }
 
-  const mapReposToProjects = (repo: Repo[]): {img: any, title: string, link: string}[] => repo.map((element: Repo) => (
+  const mapReposToProjects = (repo: Repo[]): ProjectElement[] => repo.map((element: Repo) => (
     {
-      img: <img src={element.html_url + "/blob/main/.portfolio/" + (element.config?.images?.[0] || "image.png") + "?raw=true"} alt={"Image of the project " + element.name} className="h-40" />,
+      img: <img src={element.html_url + "/blob/main/.portfolio/" + (element.config?.images?.[0] || "image.png") + "?raw=true"} alt={"Image of the project " + element.name} className="h-56" />,
       title: element.config?.title || element.name,
-      link: element.config?.app_url || element.html_url
+      github_link: element.html_url,
+      link: element.config?.app_url,
+      description: element.config?.description || "",
     }
   ));
-
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [projects, setProjects] = useState<{img: any, title: string, link: string}[]>(mapReposToProjects([]));
+  
+  const [projects, setProjects] = useState<ProjectElement[]>(mapReposToProjects([]));
   const [isInClipboard, setIsInClipboard] = useState(false);
 
   useEffect(() => {getMyPublicRepos(repos => setProjects(mapReposToProjects(repos)))}, []);
-  
-  const showNextSlide = () => {
-    const currSlide = (currentSlide < projects.length - 1)? currentSlide+1 : 0;
-    setCurrentSlide(currSlide)
-  }
-
-  const showPreviousSlide = () => {
-    const currSlide = currentSlide > 0? currentSlide-1 : projects.length -1;
-    setCurrentSlide(currSlide)
-  }
 
   const copyEmail = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     navigator.clipboard.writeText("contato@franciscodev.pro");
@@ -164,27 +163,26 @@ export default function Page() {
         </section>
         <section id="projects" className="flex-1 flex w-[100%] flex-col items-center gap-10 lg:mb-32 p-10">
             <h2 className="text-4xl font-semibold max-w-[1524px] w-[100%] "><span className="text-lime-600">projects</span>( )</h2>
-            <aside className="overflow-hidden w-[100%] h-80 relative max-w-[1524px]">
-              <ul className={"flex gap-7 overflow-visible absolute min-w-[100%] h-auto py-4 text-nowrap transition-all duration-[1s]"} style={{ transform: `translateX(-${Math.floor((currentSlide/projects.length) * 100)}%)` }}>
+            <aside className="overflow-hidden w-[100%] max-w-[1524px]">
+              <ul className="min-w-[100%] py-4 divide-y-[1px] divide-zinc-600">
                 {(
                   projects.map((elm, key) => (
-                    <Link key={key} href={elm.link}>
-                        <li className={"box-border w-64 h-auto rounded-md overflow-hidden block relative border-2 hover:border-lime-600 hover:px-1 hover:cursor-pointer transition-all "}>
-                            <aside>{elm.img}</aside>
-                            <article className="-translate-y-10 p-2 bg-zinc-700/40 absolute w-[100%]">{elm.title}</article>
+                        <li key={key} className={"flex flex-col gap-2 py-24 justify-center items-center md:content-start md:items-stretch " + (((key+1)%2==0)? "md:flex-row-reverse" : "md:flex-row")}>
+                            <aside className="max-w-96">{elm.img}</aside>
+                            <article className="flex flex-col justify-between p-3 bg-zinc-700/40 max-w-96">
+                              <section className="flex flex-col gap-5 mb-5 justify-center items-center">
+                                <h2>{elm.title}</h2>
+                                <p className="text-center">{elm.description}</p>
+                              </section>
+                              <section className="flex gap-5 justify-center">
+                                {!!elm.link && <Link href={elm.link} className="px-4 py-1 border-2 rounded-lg border-lime-600 text-lime-600">View Project</Link>}
+                                <Link href={elm.github_link} className="px-4 py-1 border-2 rounded-lg">See on Github</Link>
+                              </section>
+                            </article>
                         </li>
-                    </Link>
                   ))
                 )}
               </ul>
-              <div className="absolute bottom-0 flex justify-center items-center w-full gap-8">
-                <button type="button" className="p-2 rounded-full bg-zinc-700/50 hover:bg-zinc-700" onClick={showPreviousSlide}>
-                  <BsChevronLeft />
-                </button>
-                <button type="button" className="p-2 rounded-full bg-zinc-700/50 hover:bg-zinc-700" onClick={showNextSlide}>
-                  <BsChevronRight />
-                </button>
-              </div>
             </aside>
         </section>
         <section className="flex-1 flex w-[100%] flex-col items-center gap-10 bg-zinc-950 p-10">
