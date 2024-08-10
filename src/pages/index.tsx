@@ -6,12 +6,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 import ReactImage from "next/image";
 import { AiFillLinkedin, AiFillGithub, AiOutlineGithub } from "react-icons/ai";
-import { BsChevronLeft, BsChevronRight, BsCodeSlash } from "react-icons/bs";
+import { BsCodeSlash } from "react-icons/bs";
 import ProfileImage from "../../public/profile.png";
 import { AmazonwebservicesOriginalWordmark, BitbucketOriginal, Css3Original, GitOriginal, GitlabOriginal, Html5Original, JavascriptOriginal, JenkinsOriginal, JestPlain, NodejsOriginal, ReactOriginal, TailwindcssOriginal, TypescriptOriginal } from "devicons-react";
 import { MouseEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { TfiEmail } from "react-icons/tfi";
+import { ImagesSlide } from "@/components/images-slide";
 
 type Repo = {
   name: string
@@ -42,7 +43,6 @@ export default function Page() {
     }).catch(_ => resolve(null))
   });
 
-
   const getMyPublicRepos = async (cbk: (repos: Repo[]) => void): Promise<Repo[]> => {
     const res = await fetch('https://api.github.com/users/franciscodevpro/repos')
     const repo: Repo[] = await res.json()
@@ -55,9 +55,12 @@ export default function Page() {
     return result;
   }
 
-  const mapReposToProjects = (repo: Repo[]): ProjectElement[] => repo.map((element: Repo) => (
+  const mapReposToProjects = (repo: Repo[]): ProjectElement[] => repo.map((element: Repo, key: number) => (
     {
-      img: <img src={element.html_url + "/blob/main/.portfolio/" + (element.config?.images?.[0] || "image.png") + "?raw=true"} alt={"Image of the project " + element.name} className="h-56" />,
+      img: element.config?.images &&
+          element.config.images.map( 
+            (elm, ky) => <img key={ky} src={element.html_url + "/blob/main/.portfolio/" + elm + "?raw=true"} alt={"Image of the project " + element.name} className="h-56" />
+          ) as JSX.Element[],
       title: element.config?.title || element.name,
       github_link: element.html_url,
       link: element.config?.app_url,
@@ -168,7 +171,9 @@ export default function Page() {
                 {(
                   projects.map((elm, key) => (
                         <li key={key} className={"flex flex-col gap-2 py-24 justify-center items-center md:content-start md:items-stretch " + (((key+1)%2==0)? "md:flex-row-reverse" : "md:flex-row")}>
-                            <aside className="max-w-96">{elm.img}</aside>
+                            <aside className="max-w-96 h-56 overflow-hidden">
+                              <ImagesSlide images={elm.img} />
+                            </aside>
                             <article className="flex flex-col justify-between p-3 bg-zinc-700/40 max-w-96">
                               <section className="flex flex-col gap-5 mb-5 justify-center items-center">
                                 <h2>{elm.title}</h2>
